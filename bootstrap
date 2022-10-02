@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+main() {
+    local BOOTSTRAP_DIR="$HOME/Projects/mac-bootstrap"
+
+    if [[ -d "$BOOTSTRAP_DIR" ]]; then
+        cd "$BOOTSTRAP_DIR"
+        local ORIGIN_URI=""
+        ORIGIN_URI=$(git remote get-url origin)
+
+        if [[ "$ORIGIN_URI" != "git@github.com:jshiell/mac-bootstrap.git" ]]; then
+            echo "$BOOTSTRAP_DIR exists and doesn't seem to use the expected repo; exiting..." >&2
+            exit 1
+        fi
+
+        echo "$BOOTSTRAP_DIR exsits but seems to point to the expect repo - pulling changes"
+        git pull -r
+    else
+        mkdir -p "$(dirname $BOOTSTRAP_DIR)"
+        cd "$(dirname $BOOTSTRAP_DIR)"
+        git clone git@github.com:jshiell/mac-bootstrap.git "$(basename $BOOTSTRAP_DIR)"
+    fi
+
+    cd "$BOOTSTRAP_DIR"
+    ./setup
+}
+
+main

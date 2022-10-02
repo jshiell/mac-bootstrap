@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+prepare_environment() {
+    local BASE_DIR="$1"
+
+    local PIP_INSTALL_SCRIPT="https://bootstrap.pypa.io/get-pip.py"
+
+    local PYTHON=python3
+    local PYTHON_VERSION=unknown
+
+    PYTHON_VERSION=$("$PYTHON" --version 2>&1 | awk '{ print $2 }')
+    if [[ $? -ne 0 ]]; then
+        PYTHON=python
+        PYTHON_VERSION=$("$PYTHON" --version 2>&1 | awk '{ print $2 }')
+
+        if [[ $? -ne 0 ]]; then
+            echo "Cannot find python3 or python; exiting..." 1>&2
+            exit 1
+        fi
+    fi
+
+    if [[ ! "$PYTHON_VERSION" =~ ^3\.* ]]; then
+        echo "Unsupport version of python found; found $PYTHON_VERSION, require >= 3; exiting..."
+        exit 2
+    fi
+
+    if ! "$PYTHON" -m pip >/dev/null 2>&1; then
+        echo "Cannot find pip, trying to install..."
+        if ! curl -Ls "$PIP_INSTALL_SCRIPT" > "$BASE_DIR/get-pip.py"; then
+            echo "Failed to download $PIP_INSTALL_SCRIPT; exiting..."
+            exit 3
+        fi
+
+        "$PYTHON" "$BASE_DIR/get-pip.py"
+
+        if ! "$PYTHON" -m pip >/dev/null 2>&1; then
+            echo "Cannot find or install pip module; exiting..." 1>&2
+            exit 4
+        fi
+    fi
+
+    # ensure we have the latest pip
+    "$PYTHON" -m pip install --upgrade pip
+
+    local PYTHON_USER_BASE
+    PYTHON_USER_BASE=$($PYTHON -m site --user-base)
+    if [[ "$PATH" != *"$PYTHON_USER_BASE/bin"* ]]; then
+        export PATH="$PYTHON_USER_BASE/bin:$PATH"
+    fi
+
+    if ! ansible --version >/dev/null 2>&1; then
+        "$PYTHON" -m pip install --user ansible
+    fi
+
+    if ! ansible --version >/dev/null 2>&1; then
+        echo "Cannot find or install ansible module; exiting..." 1>&2
+        exit 5
+    fi
+}
+
+main() {
+    local TAGS="${1:-}"
+
+    local BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+    cd "$BASE_DIR"
+
+    prepare_environment "$BASE_DIR"
+
+    ansible-galaxy install -r "$BASE_DIR/requirements.yaml"
+
+    local PLAYBOOK="$BASE_DIR/main.yaml"
+    if [[ -n "$TAGS" ]]; then
+        ansible-playbook "$PLAYBOOK" --ask-become-pass --tags "$TAGS"
+    else
+        ansible-playbook "$PLAYBOOK" --ask-become-pass
+    fi
+}
+
+main "$@"

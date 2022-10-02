@@ -1,0 +1,32 @@
+---
+- name: Ensure git is installed
+  homebrew:
+    name: git
+    state: present
+
+- name: Configure Git
+  shell: |
+    git config --global user.name '{{ git_user_name }}'
+    git config --global user.email '{{ git_user_email }}'
+
+    git config --global user.signingkey '{{ git_user_signingkey }}'
+    git config --global commit.gpgsign {{ git_commit_gpgsign | default(true) }}
+
+    git config --global pull.rebase true
+    git config --global init.defaultBranch main
+    git config --global log.follow true
+    git config --global core.commentChar ";"
+    git config --global --add --bool push.autoSetupRemote true
+
+    git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
+    git config --global color.diff-highlight.oldNormal "red bold"
+    git config --global color.diff-highlight.oldHighlight "red bold 52"
+    git config --global color.diff-highlight.newNormal "green bold"
+    git config --global color.diff-highlight.newHighlight "green bold 22"
+    git config --global color.diff.meta "yellow"
+    git config --global color.diff.frag "magenta bold"
+    git config --global color.diff.commit "yellow bold"
+    git config --global color.diff.old "red bold"
+    git config --global color.diff.new "green bold"
+    git config --global color.diff.whitespace "red reverse"
+  become: false

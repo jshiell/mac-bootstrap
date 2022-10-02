@@ -1,0 +1,8 @@
+---
+roles:
+  - name: elliotweiser.osx-command-line-tools
+  - name: stephdewit.nvm
+  - name: ajsalminen.hosts
+
+collections:
+  - name: geerlingguy.mac

@@ -1,0 +1,46 @@
+---
+- hosts: all
+
+  vars_files:
+    - default.config.yaml
+
+  pre_tasks:
+    - name: Include playbook configuration.
+      include_vars: "{{ item }}"
+      with_fileglob:
+        - "{{ playbook_dir }}/config.yaml"
+      tags: ['always']
+    - name: Create dummy profile
+      ansible.builtin.file:
+        path: "{{ nvm_shell_init_file }}"
+        state: touch
+        mode: u=rw,g=r,o=r
+
+  roles:
+    - role: elliotweiser.osx-command-line-tools
+    - role: geerlingguy.mac.homebrew
+      tags: ['homebrew']
+
+    - role: stephdewit.nvm
+      nvm_node_version: 16
+      tags: ['nvm']
+
+    - role: ajsalminen.hosts
+      become: yes
+      hosts_file_group: wheel
+      tags: ['hosts']
+
+  tasks:
+    - import_tasks: tasks/dotfiles.yaml
+      when: configure_dotfiles
+      tags: ['dotfiles']
+
+    - import_tasks: tasks/jenv.yaml
+      tags: ['jenv']
+
+    - import_tasks: tasks/gnupg.yaml
+      tags: ['gnupg']
+
+    - import_tasks: tasks/osx.yaml
+      when: ansible_facts['os_family'] == "Darwin"
+      tags: ['osx']

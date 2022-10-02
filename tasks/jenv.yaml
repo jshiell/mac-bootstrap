@@ -1,0 +1,26 @@
+---
+- name: Ensure jenv is installed
+  homebrew:
+    name: jenv
+    state: present
+
+- name: Ensure jenv root is present
+  file:
+    path: "{{ jenv_root | default('~/.jenv') }}"
+    state: directory
+    mode: 0755
+
+- name: Ensure jenv directory structure is created
+  command: >-
+    bash -lc 'eval "$(jenv init -)"'
+  become: false
+
+- name: Add all Mac OS JVMs to Jenv
+  shell: >-
+    /usr/libexec/java_home -V 2>&1 | tail -n+2 | rev | cut -f1 -d' ' | rev | xargs -n1 jenv add
+  when: ansible_facts['os_family'] == "Darwin"
+  become: false
+
+- name: Set default JVM to configured version
+  shell: "jenv global {{ jenv_default_version | default('17.0') }}"
+  become: false

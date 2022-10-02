@@ -1,0 +1,23 @@
+---
+- name: Ensure gnupg is installed
+  homebrew:
+    name: gnupg
+    state: present
+
+- name: Ensure pinentry-mac is installed
+  homebrew:
+    name: pinentry-mac
+    state: present
+
+- name: Configure pinentry
+  shell: |
+    mkdir -p "$HOME/.gnupg"
+    if ! grep pinentry-program "$HOME/.gnupg/gpg-agent.conf" >/dev/null 2>&1; then
+      echo pinentry-program "$(which pinentry-mac)" >> "$HOME/.gnupg/gpg-agent.conf"
+    fi
+
+    if ! grep use-agent "$HOME/.gnupg/gpg.conf" >/dev/null 2>&1; then
+      echo use-agent >> "$HOME/.gnupg/gpg.conf"
+    fi
+  when: ansible_facts['os_family'] == "Darwin"
+  become: false

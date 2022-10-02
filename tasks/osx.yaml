@@ -1,0 +1,223 @@
+---
+- name: Ensure firewall is on
+  community.general.osx_defaults:
+    domain: com.apple.alf
+    key: globalstate
+    type: int
+    value: 1
+    state: present
+- name: Enable stealth mode on the firewall
+  community.general.osx_defaults:
+    domain: com.apple.alf
+    key: stealthenabled
+    type: bool
+    value: true
+    state: present
+
+- name: Expand save panel by default (1/2)
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: NSNavPanelExpandedStateForSaveMode
+    type: bool
+    value: true
+    state: present
+- name: Expand save panel by default (2/2)
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: NSNavPanelExpandedStateForSaveMode2
+    type: bool
+    value: true
+    state: present
+- name: Default to saving to local disk
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: NSDocumentSaveNewDocumentsToCloud
+    type: bool
+    value: false
+    state: present
+
+- name: Make screenshots PNGs by default
+  community.general.osx_defaults:
+    domain: com.apple.screencapture
+    key: type
+    type: string
+    value: "png"
+    state: present
+- name: Save screenshots to Downloads
+  community.general.osx_defaults:
+    domain: com.apple.screencapture
+    key: location
+    type: string
+    value: "~/Downloads"
+    state: present
+
+- name: Turn on Safari debug menu
+  community.general.osx_defaults:
+    domain: com.apple.Safari
+    key: IncludeInternalDebugMenu
+    type: bool
+    value: true
+    state: present
+- name: Don't automatically open downloads in Safari
+  community.general.osx_defaults:
+    domain: com.apple.Safari
+    key: AutoOpenSafeDownloads
+    type: bool
+    value: false
+    state: present
+
+- name: Turn on automatic update checks
+  community.general.osx_defaults:
+    domain: com.apple.SoftwareUpdate
+    key: AutomaticCheckEnabled
+    type: int
+    value: 1
+  become: true
+- name: Check for updates daily
+  community.general.osx_defaults:
+    domain: com.apple.SoftwareUpdate
+    key: ScheduleFrequency
+    type: int
+    value: 1
+  become: true
+
+- name: Ask for password after screen saver actives
+  community.general.osx_defaults:
+    domain: com.apple.screensaver
+    key: askForPassword
+    type: int
+    value: 1
+  become: false
+- name: Only ask for password 10s after screensaver starts
+  community.general.osx_defaults:
+    domain: com.apple.screensaver
+    key: askForPasswordDelay
+    type: int
+    value: 10
+  become: false
+
+- name: Show extended information on login
+  community.general.osx_defaults:
+    domain: com.apple.loginwindow
+    key: AdminHostInfo
+    type: string
+    value: HostName
+  become: true
+
+- name: Enable full UI navigation by keyboard
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: AppleKeyboardUIMode
+    type: int
+    value: 3
+    state: present
+
+- name: Search current directory by default
+  community.general.osx_defaults:
+    domain: com.apple.finder
+    key: FXDefaultSearchScope
+    type: string
+    value: SCcf
+    state: present
+- name: Default to column view in Finder
+  community.general.osx_defaults:
+    domain: com.apple.finder
+    key: FXPreferredViewStyle
+    type: string
+    value: clmv
+    state: present
+
+- name: Auto-hide the Dock
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: autohide
+    type: bool
+    value: true
+    state: present
+- name: Don't delay hiding the Dock
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: autohide-delay
+    type: int
+    value: 0
+    state: present
+
+- name: Don't write DS_Store files to network drives
+  community.general.osx_defaults:
+    domain: com.apple.desktopservices
+    key: DSDontWriteNetworkStores
+    type: bool
+    value: true
+    state: present
+
+- name: Allow AirDrop over ethernet
+  community.general.osx_defaults:
+    domain: com.apple.NetworkBrowser
+    key: BrowseAllInterfaces
+    type: bool
+    value: true
+    state: present
+
+- name: Speak English
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: AppleLanguages
+    type: array
+    value:
+    - "en-GB"
+    - "en"
+    state: present
+- name: Current local is GB
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: AppleLocale
+    type: string
+    value: en_GB
+    state: present
+- name: Use Metric for measurements
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: AppleMeasurementUnits
+    type: string
+    value: Centimeters
+    state: present
+- name: Use Metric
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: AppleMetricUnits
+    type: bool
+    value: true
+    state: present
+
+- name: Set Timezone
+  shell: |
+    systemsetup -settimezone "{{ timezone | default('Europe/London') }}" > /dev/null  
+  become: true
+
+- name: Clean up LaunchServices duplicates
+  shell: |
+    /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user
+
+- name: Hide Time Machine
+  shell: |
+    # Hide Time Machine icon
+    for domain in ~/Library/Preferences/ByHost/com.apple.systemuiserver.*; do
+        defaults write "${domain}" dontAutoLoad -array \
+            "/System/Library/CoreServices/Menu Extras/TimeMachine.menu"
+    done
+
+    # Don't ask to backup new volumes
+    defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
+
+- name: Disable Time Machine
+  shell: |
+    # Disable local TM snapshots
+    tmutil disable
+  become: true
+
+- name: Ensure Rosetta is installed
+  shell: |
+    if [[ "$(uname -p)" == 'arm' ]]; then
+        softwareupdate --install-rosetta
+    fi
+  become: true

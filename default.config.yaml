@@ -1,0 +1,85 @@
+---
+downloads: ~/.ansible-downloads/
+
+# we use a dummy file as we manage NVM init via dotfiles
+nvm_shell_init_file: ~/.nvm_profile
+
+git_user_name: Jamie Shiell
+git_user_email: jamie@infernus.org
+git_user_signingkey: 1C25BF0EE37BF38E
+
+dotfiles_files:
+  - curlrc
+  - vim
+  - vimrc
+  - zshrc
+
+homebrew_taps:
+  - cloudfoundry/tap
+  - homebrew/core
+  - homebrew/cask
+  - homebrew/cask-versions
+  - bell-sw/liberica
+
+homebrew_installed_packages:
+  - bat
+  - cf-cli@8
+  - diff-so-fancy
+  - fd
+  - git
+  - gnupg
+  - httpie
+  - iftop
+  - jenv
+  - jq
+  - kubernetes-cli
+  - kubevela
+  - mas
+  - mtr
+  - noti
+  - pinentry-mac
+  - prettyping
+  - python
+  - rbenv
+  - rbenv-bundler
+  - rbenv-bundler-ruby-version
+  - ruby-build
+  - the_silver_searcher
+  - tldr
+  - tmux
+  - vault
+
+homebrew_cask_appdir: /Applications
+homebrew_cask_accept_external_apps: true
+homebrew_cask_apps:
+  - 1password
+  - 1password-cli
+  - aerial
+  - alfred
+  - banktivity
+  - bartender
+  - battle-net
+  - calibre
+  - daisydisk
+  - discord
+  - docker
+  - doxie
+  - fantastical
+  - firefox
+  - fly
+  - google-chrome
+  - google-cloud-sdk
+  - intellij-idea
+  - iterm2
+  - little-snitch
+  - moom
+  - omnigraffle
+  - pop
+  - scroll-reverser
+  - signal
+  - stream
+  - slack
+  - liberica-jdk11
+  - liberica-jdk17
+  - transmit
+  - visual-studio-code
