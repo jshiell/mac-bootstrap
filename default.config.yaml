@@ -4,6 +4,8 @@ downloads: ~/.ansible-downloads/
 # we use a dummy file as we manage NVM init via dotfiles
 nvm_shell_init_file: ~/.nvm_profile
 
+configure_dotfiles: true
+
 git_user_name: Jamie Shiell
 git_user_email: jamie@infernus.org
 git_user_signingkey: 1C25BF0EE37BF38E
