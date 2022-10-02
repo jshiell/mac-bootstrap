@@ -126,6 +126,13 @@
     type: string
     value: clmv
     state: present
+- name: Show all file extensions by default
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: AppleShowAllExtensions
+    type: bool
+    value: true
+    state: present
 
 - name: Auto-hide the Dock
   community.general.osx_defaults:
