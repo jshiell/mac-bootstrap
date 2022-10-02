@@ -145,7 +145,7 @@
   community.general.osx_defaults:
     domain: com.apple.dock
     key: autohide-delay
-    type: int
+    type: float
     value: 0
     state: present
 
