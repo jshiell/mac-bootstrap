@@ -190,29 +190,23 @@
     state: present
 
 - name: Set Timezone
-  shell: |
-    systemsetup -settimezone "{{ timezone | default('Europe/London') }}" > /dev/null  
+  shell: systemsetup -settimezone "{{ timezone | default('Europe/London') }}" > /dev/null  
   become: true
 
 - name: Clean up LaunchServices duplicates
-  shell: |
-    /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user
+  shell: /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user
 
 - name: Hide Time Machine
   shell: |
-    # Hide Time Machine icon
     for domain in ~/Library/Preferences/ByHost/com.apple.systemuiserver.*; do
         defaults write "${domain}" dontAutoLoad -array \
             "/System/Library/CoreServices/Menu Extras/TimeMachine.menu"
     done
 
-    # Don't ask to backup new volumes
     defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
 
 - name: Disable Time Machine
-  shell: |
-    # Disable local TM snapshots
-    tmutil disable
+  shell: tmutil disable
   become: true
 
 - name: Ensure Rosetta is installed
