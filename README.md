@@ -12,9 +12,6 @@ You either bootstrap it via `curl`, or clone the repo and run it locally.
 
 ### Bootstrap
 
-As this is a private repository, you'll need to create a [GitHub personal access token](https://github.com/settings/tokens) and approve it for SSO usage. 
-
-Then run, replacing `your-token-here` with your new token:
 ``` bash
 curl -L -H 'accept: application/vnd.github.v3.raw' "https://api.github.com/repos/jshiell/mac-bootstrap/contents/bootstrap" | bash
 ```
