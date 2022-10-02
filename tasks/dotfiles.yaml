@@ -7,6 +7,7 @@
     dest: "{{ dotfiles_repo_local_destination | default('~/dotfiles') }}"
     version: "{{ dotfiles_repo_version | default('main') }}"
     accept_hostkey: "{{ dotfiles_repo_accept_hostkey | default(false) }}"
+    recursive: true
   become: false
 
 - name: Ensure all configured dotfiles are links.
