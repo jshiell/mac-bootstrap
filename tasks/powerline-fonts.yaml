@@ -13,6 +13,6 @@
 
 - name: Install Powerline fonts
   shell: |
-    cd "{{ tempdir.path }}/fonts"
+    cd "{{ tempdir.path }}"
     ./install.sh
   become: false
