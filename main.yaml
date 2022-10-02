@@ -38,8 +38,14 @@
     - import_tasks: tasks/jenv.yaml
       tags: ['jenv']
 
+    - import_tasks: tasks/git.yaml
+      tags: ['git']
+
     - import_tasks: tasks/gnupg.yaml
       tags: ['gnupg']
+
+    - import_tasks: tasks/powerline-fonts.yaml
+      tags: ['fonts']
 
     - import_tasks: tasks/osx.yaml
       when: ansible_facts['os_family'] == "Darwin"
