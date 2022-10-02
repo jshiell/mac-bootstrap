@@ -219,6 +219,6 @@
 - name: Ensure Rosetta is installed
   shell: |
     if [[ "$(uname -p)" == 'arm' ]]; then
-        softwareupdate --install-rosetta
+        softwareupdate --install-rosetta --agree-to-license
     fi
   become: true
