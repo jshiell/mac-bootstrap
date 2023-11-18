@@ -21,12 +21,11 @@ homebrew_taps:
   - homebrew/core
   - homebrew/cask
   - homebrew/cask-versions
+  - homebrew/cask-fonts
   - bell-sw/liberica
 
 homebrew_installed_packages:
   - bat
-  - cf-cli@8
-  - colima
   - diff-so-fancy
   - docker
   - docker-compose
@@ -37,8 +36,6 @@ homebrew_installed_packages:
   - iftop
   - jenv
   - jq
-  - kubernetes-cli
-  - kubevela
   - mas
   - mtr
   - noti
@@ -52,14 +49,12 @@ homebrew_installed_packages:
   - the_silver_searcher
   - tldr
   - tmux
-  - vault
 
 homebrew_cask_appdir: /Applications
 homebrew_cask_accept_external_apps: true
 homebrew_cask_apps:
   - 1password
   - 1password-cli
-  - aerial
   - alfred
   - banktivity
   - bartender
@@ -70,7 +65,7 @@ homebrew_cask_apps:
   - doxie
   - fantastical
   - firefox
-  - fly
+  - font-monaspace
   - google-chrome
   - google-cloud-sdk
   - intellij-idea
@@ -78,12 +73,11 @@ homebrew_cask_apps:
   - little-snitch
   - moom
   - omnigraffle
-  - pop
   - scroll-reverser
   - signal
   - steam
   - slack
-  - liberica-jdk11
   - liberica-jdk17
+  - liberica-jdk21
   - transmit
   - visual-studio-code
