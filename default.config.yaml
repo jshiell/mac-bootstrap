@@ -26,11 +26,11 @@ homebrew_taps:
 
 homebrew_installed_packages:
   - bat
-  - diff-so-fancy
   - docker
   - docker-compose
   - fd
   - git
+  - git-delta
   - gnupg
   - httpie
   - iftop
