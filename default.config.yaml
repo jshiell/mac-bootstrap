@@ -55,6 +55,7 @@ homebrew_cask_accept_external_apps: true
 homebrew_cask_apps:
   - 1password
   - 1password-cli
+  - alacritty
   - alfred
   - banktivity
   - bartender
@@ -68,8 +69,7 @@ homebrew_cask_apps:
   - font-monaspace
   - google-chrome
   - google-cloud-sdk
-  - intellij-idea
-  - iterm2
+  - intellij-idea-ce
   - little-snitch
   - moom
   - omnigraffle
