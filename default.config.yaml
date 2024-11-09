@@ -69,11 +69,13 @@ homebrew_cask_apps:
   - google-chrome
   - google-cloud-sdk
   - intellij-idea-ce
+  - keepingyouawake
   - little-snitch
   - moom
   - mullvadvpn
   - omnigraffle
   - prusaslicer
+  - scroll-reverser
   - signal
   - steam
   - slack
