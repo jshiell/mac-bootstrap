@@ -8,16 +8,16 @@ prepare_environment() {
 
     local PIP_INSTALL_SCRIPT="https://bootstrap.pypa.io/get-pip.py"
 
-    local PYTHON=python3
+    local PYTHON=/usr/bin/python3 # prefer system python
     local PYTHON_VERSION=unknown
 
     PYTHON_VERSION=$("$PYTHON" --version 2>&1 | awk '{ print $2 }')
     if [[ $? -ne 0 ]]; then
-        PYTHON=python
+        PYTHON=python3
         PYTHON_VERSION=$("$PYTHON" --version 2>&1 | awk '{ print $2 }')
 
         if [[ $? -ne 0 ]]; then
-            echo "Cannot find python3 or python; exiting..." 1>&2
+            echo "Cannot find /usr/bin/python3 or python3; exiting..." 1>&2
             exit 1
         fi
     fi
@@ -46,7 +46,7 @@ prepare_environment() {
     "$PYTHON" -m pip install --upgrade pip
 
     local PYTHON_USER_BASE
-    PYTHON_USER_BASE=$($PYTHON -m site --user-base)
+    PYTHON_USER_BASE=$("$PYTHON" -m site --user-base)
     if [[ "$PATH" != *"$PYTHON_USER_BASE/bin"* ]]; then
         export PATH="$PYTHON_USER_BASE/bin:$PATH"
     fi
