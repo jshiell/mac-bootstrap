@@ -21,10 +21,6 @@
     - role: geerlingguy.mac.homebrew
       tags: ['homebrew']
 
-    - role: stephdewit.nvm
-      nvm_node_version: 22
-      tags: ['nvm']
-
     - role: ajsalminen.hosts
       become: yes
       hosts_file_group: wheel

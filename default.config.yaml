@@ -34,15 +34,12 @@ homebrew_installed_packages:
   - jenv
   - jq
   - mas
+  - mise
   - mtr
   - noti
   - pinentry-mac
   - prettyping
   - python
-  - rbenv
-  - rbenv-bundler
-  - rbenv-bundler-ruby-version
-  - ruby-build
   - tldr
   - tmux
 
