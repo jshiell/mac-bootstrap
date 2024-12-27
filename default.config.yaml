@@ -49,7 +49,6 @@ homebrew_cask_accept_external_apps: true
 homebrew_cask_apps:
   - 1password
   - 1password-cli
-  - alacritty
   - alfred
   - arq
   - autodesk-fusion
@@ -64,6 +63,7 @@ homebrew_cask_apps:
   - fantastical
   - firefox
   - font-monaspace
+  - ghostty
   - google-chrome
   - google-cloud-sdk
   - intellij-idea-ce
