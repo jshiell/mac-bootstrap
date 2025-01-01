@@ -17,6 +17,7 @@ dotfiles_files:
   - { src: vim, dest: .vim }
   - { src: alacritty, dest: .config/alacritty }
   - { src: ghostty, dest: .config/ghostty }
+  - { src: zed, dest: .config/zed }
 
 homebrew_taps:
   - cloudfoundry/tap
