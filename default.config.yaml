@@ -41,6 +41,7 @@ homebrew_installed_packages:
   - mtr
   - noti
   - pinentry-mac
+  - pipx
   - prettyping
   - python
   - tldr
