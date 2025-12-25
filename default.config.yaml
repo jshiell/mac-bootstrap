@@ -65,7 +65,7 @@ homebrew_cask_apps:
   - doxie
   - fantastical
   - firefox
-  - font-monaspace-nerd-font
+  - font-monaspace-nf
   - ghostty
   - google-chrome
   - google-cloud-sdk
