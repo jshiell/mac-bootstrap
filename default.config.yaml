@@ -18,6 +18,7 @@ dotfiles_files:
   - { src: ghostty, dest: .config/ghostty }
   - { src: zed, dest: .config/zed }
   - { src: starship.toml, dest: .config/starship.toml }
+  - { src: helix, dest: .config/helix }
 
 homebrew_taps:
   - cloudfoundry/tap
