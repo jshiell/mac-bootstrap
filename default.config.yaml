@@ -8,7 +8,7 @@ configure_dotfiles: true
 
 git_user_name: Jamie Shiell
 git_user_email: jamie@infernus.org
-git_user_signingkey: 1C25BF0EE37BF38E
+git_user_signingkey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKs6F0L2RzwOb5CpHOd6hXga7FmG2x0Y7d6nqknA5cPV
 
 dotfiles_files:
   - { src: curlrc, dest: .curlrc }
@@ -19,19 +19,22 @@ dotfiles_files:
   - { src: zed, dest: .config/zed }
   - { src: starship.toml, dest: .config/starship.toml }
   - { src: helix, dest: .config/helix }
+  - { src: agents/instructions.md, dest: .config/opencode/instructions.md }
+  - { src: agents/instructions.md, dest: .claude/CLAUDE.md }
 
 homebrew_taps:
-  - cloudfoundry/tap
-  - bell-sw/liberica
 
 homebrew_installed_packages:
   - bat
+  - bottom
   - docker
   - docker-compose
   - fd
+  - fzf
   - git
   - git-delta
-  - gnupg
+  - gh
+  - helix
   - httpie
   - iftop
   - jenv
@@ -39,11 +42,10 @@ homebrew_installed_packages:
   - mas
   - mise
   - mtr
+  - nono
   - noti
-  - pinentry-mac
-  - pipx
+  - prettier
   - prettyping
-  - python
   - tldr
   - tmux
 
@@ -58,32 +60,31 @@ homebrew_cask_apps:
   - banktivity
   - bartender
   - battle-net
-  - betterdisplay
+  - busycal
   - calibre
+  - claude-code
   - daisydisk
   - discord
+  - dot
   - doxie
-  - fantastical
+  - elgato-stream-deck
   - firefox
   - font-monaspace-nf
   - ghostty
   - google-chrome
   - google-cloud-sdk
-  - intellij-idea-ce
+  - intellij-idea
   - keepingyouawake
+  - kobo
   - little-snitch
   - moom
-  - mullvadvpn
-  - omnigraffle
+  - mullvad-vpn
   - orbstack
   - prusaslicer
   - scroll-reverser
   - signal
   - steam
   - slack
-  - liberica-jdk17
-  - liberica-jdk21
   - transmit
-  - visual-studio-code
   - vivaldi
   - zed

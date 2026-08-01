@@ -37,9 +37,6 @@
     - import_tasks: tasks/git.yaml
       tags: ['git']
 
-    - import_tasks: tasks/gnupg.yaml
-      tags: ['gnupg']
-
     - import_tasks: tasks/powerline-fonts.yaml
       tags: ['fonts']
 
