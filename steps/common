@@ -1,0 +1,17 @@
+# Helpers shared by the provisioning steps. Sourced, never executed.
+
+warn() {
+    echo "WARNING: $*" >&2
+}
+
+# Run a command, or print it and do nothing when DRY_RUN is set.
+run() {
+    if [[ -n "${DRY_RUN:-}" ]]; then
+        printf 'DRY RUN:'
+        printf ' %q' "$@"
+        printf '\n'
+        return 0
+    fi
+
+    "$@"
+}

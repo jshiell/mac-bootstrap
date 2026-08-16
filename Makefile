@@ -10,8 +10,12 @@ homebrew:
 rosetta:
 	./steps/rosetta
 
+# PATH so a Homebrew installed moments ago by ./steps/homebrew is found; --force
+# so a cask whose app was installed by hand is adopted rather than erroring; the
+# DRY_RUN prefix turns the whole thing into an echo; || true so one unavailable
+# cask cannot stop the targets that follow.
 brew: homebrew
-	HOMEBREW_CASK_OPTS=--force brew bundle || true
+	PATH="/opt/homebrew/bin:$$PATH" $${DRY_RUN:+echo DRY RUN:} HOMEBREW_CASK_OPTS=--force brew bundle || true
 
 dotfiles:
 	./steps/dotfiles

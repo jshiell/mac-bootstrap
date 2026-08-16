@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# shellcheck source=steps/common
+source "$(dirname "$0")/common"
+
+if command -v brew >/dev/null 2>&1; then
+    echo "Homebrew is already installed"
+    eval "$(brew shellenv)"
+    exit 0
+fi
+
+if [[ -n "${DRY_RUN:-}" ]]; then
+    echo "DRY RUN: would install Homebrew, and with it the Command Line Tools"
+    exit 0
+fi
+
+# The Homebrew installer pulls in the Command Line Tools, which is where git and
+# make come from on an otherwise bare machine.
+echo "Installing Homebrew"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+eval "$(/opt/homebrew/bin/brew shellenv)"

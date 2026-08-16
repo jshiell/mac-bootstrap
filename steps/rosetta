@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# shellcheck source=steps/common
+source "$(dirname "$0")/common"
+
+if [[ "$(uname -p)" != "arm" ]]; then
+    echo "Not Apple silicon - Rosetta is not required"
+    exit 0
+fi
+
+# oahd is launched on demand, so pgrep can report it missing on a machine that
+# does have Rosetta. The directory is there from the moment it is installed.
+if [[ -d /Library/Apple/usr/libexec/oah ]]; then
+    echo "Rosetta is already installed"
+    exit 0
+fi
+
+run sudo -v
+run sudo softwareupdate --install-rosetta --agree-to-license
