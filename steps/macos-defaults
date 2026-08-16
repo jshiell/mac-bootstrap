@@ -58,7 +58,8 @@ run defaults write NSGlobalDomain AppleMeasurementUnits -string "Centimeters"
 run defaults write NSGlobalDomain AppleMetricUnits -bool true
 
 # Clean up duplicate entries in the Open With menu
-run "$LSREGISTER" -kill -r -domain local -domain system -domain user
+run "$LSREGISTER" -kill -r -domain local -domain system -domain user \
+    || warn "could not rebuild the LaunchServices database"
 
 # Hide the Time Machine menu extra. dontAutoLoad is another mechanism macOS has
 # long since stopped honouring, kept for the same reason as askForPassword.
