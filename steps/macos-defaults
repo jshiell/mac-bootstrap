@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+
+# Everything here is written to the current user's domains. Do not run it under
+# sudo, and do not move any of it into steps/macos-system - as root these would
+# silently configure root rather than you.
+
+set -euo pipefail
+
+# shellcheck source=steps/common
+source "$(dirname "$0")/common"
+
+LSREGISTER=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
+
+# Save panels
+run defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+run defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
+run defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
+
+# Screenshots. Ansible stored the literal string '~/Downloads' here, which
+# screencapture does not reliably expand - so this writes the full path.
+run defaults write com.apple.screencapture type -string "png"
+run defaults write com.apple.screencapture location -string "$HOME/Downloads"
+
+# Safari. Its preferences live in a TCC-protected container, so these need the
+# terminal to hold Full Disk Access; without it they fail rather than abort.
+run defaults write com.apple.Safari IncludeInternalDebugMenu -bool true \
+    || warn "could not write com.apple.Safari - does this terminal have Full Disk Access?"
+run defaults write com.apple.Safari AutoOpenSafeDownloads -bool false \
+    || warn "could not write com.apple.Safari - does this terminal have Full Disk Access?"
+
+# Screen saver. macOS has ignored both of these for several releases now - the
+# setting moved elsewhere - but they cost nothing to keep writing.
+run defaults write com.apple.screensaver askForPassword -int 1
+run defaults write com.apple.screensaver askForPasswordDelay -int 10
+
+# Keyboard
+run defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
+
+# Finder
+run defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
+run defaults write com.apple.finder FXPreferredViewStyle -string "clmv"
+run defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+# Dock
+run defaults write com.apple.dock autohide -bool true
+run defaults write com.apple.dock autohide-delay -float 0
+
+# Don't write .DS_Store files to network drives
+run defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
+
+# Allow AirDrop over ethernet
+run defaults write com.apple.NetworkBrowser BrowseAllInterfaces -bool true
+
+# Language, locale and units
+run defaults write NSGlobalDomain AppleLanguages -array "en-GB" "en"
+run defaults write NSGlobalDomain AppleLocale -string "en_GB"
+run defaults write NSGlobalDomain AppleMeasurementUnits -string "Centimeters"
+run defaults write NSGlobalDomain AppleMetricUnits -bool true
+
+# Clean up duplicate entries in the Open With menu
+run "$LSREGISTER" -kill -r -domain local -domain system -domain user
+
+# Hide the Time Machine menu extra. dontAutoLoad is another mechanism macOS has
+# long since stopped honouring, kept for the same reason as askForPassword.
+#
+# Ansible globbed ByHost/com.apple.systemuiserver.* and wrote to each match. The
+# glob matched nothing, so 'defaults write' took the unexpanded pattern as a
+# path and created a file with a literal asterisk in its name - which the next
+# run then matched, appending another host UUID. Two such files are on this
+# machine and neither does anything. -currentHost writes the plist that was
+# meant all along, and writes the same one every time.
+run defaults -currentHost write com.apple.systemuiserver dontAutoLoad -array \
+    "/System/Library/CoreServices/Menu Extras/TimeMachine.menu"
+
+run defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
+
+# killall reports failure for any of these that wasn't running, which is fine
+run killall Dock Finder SystemUIServer || true
