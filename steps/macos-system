@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+# The operations that genuinely need root. Run this as yourself - it calls sudo
+# per command, so that $HOME still means your home directory throughout.
+
+set -euo pipefail
+
+# shellcheck source=steps/common
+source "$(dirname "$0")/common"
+
+SOCKETFILTERFW=/usr/libexec/ApplicationFirewall/socketfilterfw
+TIMEZONE="${TIMEZONE:-Europe/London}"
+
+run sudo -v
+
+# Ansible wrote globalstate and stealthenabled into com.apple.alf as the user -
+# a per-user plist the firewall does not read - so the firewall has never
+# actually been turned on by this repo. socketfilterfw is the available path,
+# though Apple has said it is not a supported API.
+run sudo "$SOCKETFILTERFW" --setglobalstate on --setstealthmode on
+
+# These two and AdminHostInfo below are system-wide settings, so they are
+# written to /Library/Preferences. Ansible passed the bare domain under become,
+# which put them in root's own preferences, where nothing reads them.
+run sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticCheckEnabled -int 1
+run sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate ScheduleFrequency -int 1
+
+# Show the host name on the login window
+run sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo -string HostName
+
+run sudo systemsetup -settimezone "$TIMEZONE"
+
+# tmutil refuses its privileged subcommands unless the terminal holds Full Disk
+# Access, so this is allowed to fail rather than take the run down with it.
+run sudo tmutil disable \
+    || warn "could not disable Time Machine - does this terminal have Full Disk Access?"
