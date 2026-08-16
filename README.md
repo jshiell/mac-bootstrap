@@ -57,7 +57,7 @@ DRY_RUN=1 make all  # the individual commands each step would run
 | `homebrew` | installs Homebrew, and the Command Line Tools with it, if absent |
 | `rosetta` | installs Rosetta 2 on Apple silicon - before `brew`, as some casks are Intel-only |
 | `brew` | installs everything in the `Brewfile` |
-| `dotfiles` | clones `jshiell/dotfiles` to `~/dotfiles` and symlinks it into `$HOME` |
+| `dotfiles` | clones `jshiell/dotfiles` to `~/dotfiles`, then runs that repo's own `make install` |
 | `defaults` | writes the per-user macOS defaults, then restarts Dock, Finder and SystemUIServer |
 | `system` | firewall, software update, login window and timezone - each via its own `sudo` |
 
@@ -66,8 +66,10 @@ The timezone defaults to `Europe/London`; override it with `TIMEZONE=... make sy
 Git configuration lives in the dotfiles repo now, as `gitconfig` symlinked to `~/.gitconfig`, rather
 than being applied from here.
 
-Anything in `$HOME` that a dotfile would replace is moved aside to `<name>.bak` first, so the first
-run after switching to this may leave a few backups behind.
+Which dotfiles exist and where they are linked is decided by the dotfiles repo, not here. This repo
+only clones it and calls `make install`. Anything already in `$HOME` as a real file or directory is
+left alone rather than replaced; the `make status` run at the end of the step names those, and
+clearing them is yours to do.
 
 The firewall is enabled with `socketfilterfw`. Apple has said that isn't a supported API; it is the
 only available path, and writing the preference file directly no longer works.
