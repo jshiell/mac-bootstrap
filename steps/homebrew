@@ -5,6 +5,9 @@ set -euo pipefail
 # shellcheck source=steps/common
 source "$(dirname "$0")/common"
 
+# Both shellenv calls below only affect this script - make runs each recipe line
+# in its own shell, so nothing exported here reaches the brew target. That target
+# puts Homebrew on PATH itself. These are here to confirm brew is usable.
 if command -v brew >/dev/null 2>&1; then
     echo "Homebrew is already installed"
     eval "$(brew shellenv)"
