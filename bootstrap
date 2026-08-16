@@ -1,31 +1,63 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
-IFS=$'\n\t'
+
+BOOTSTRAP_REPO="https://github.com/jshiell/mac-bootstrap.git"
+BOOTSTRAP_DIR="$HOME/Projects/mac-bootstrap"
+
+is_our_repo() {
+    case "${1%.git}" in
+        https://github.com/jshiell/mac-bootstrap) return 0 ;;
+        git@github.com:jshiell/mac-bootstrap) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+# Deliberately duplicated from steps/homebrew: that script is in the repo, and
+# cloning the repo needs the git this installs.
+install_homebrew() {
+    if [[ -x /opt/homebrew/bin/brew ]]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    fi
+
+    if command -v brew >/dev/null 2>&1; then
+        echo "Homebrew is already installed"
+        return
+    fi
+
+    echo "Installing Homebrew, and with it the Command Line Tools - git and make come from those"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+}
 
 main() {
-    local BOOTSTRAP_DIR="$HOME/Projects/mac-bootstrap"
+    # Run through curl, this script's stdin is a pipe, so Homebrew's installer
+    # goes non-interactive and calls 'sudo -n' - which fails unless credentials
+    # are already cached. sudo itself reads the password from the terminal
+    # rather than from the pipe, so priming it here works.
+    sudo -v
+
+    install_homebrew
 
     if [[ -d "$BOOTSTRAP_DIR" ]]; then
-        cd "$BOOTSTRAP_DIR"
-        local ORIGIN_URI=""
-        ORIGIN_URI=$(git remote get-url origin)
+        local origin
+        origin=$(git -C "$BOOTSTRAP_DIR" remote get-url origin)
 
-        if [[ "$ORIGIN_URI" != "git@github.com:jshiell/mac-bootstrap.git" ]]; then
-            echo "$BOOTSTRAP_DIR exists and doesn't seem to use the expected repo; exiting..." >&2
+        if ! is_our_repo "$origin"; then
+            echo "$BOOTSTRAP_DIR exists but its origin is $origin; exiting..." >&2
             exit 1
         fi
 
-        echo "$BOOTSTRAP_DIR exsits but seems to point to the expect repo - pulling changes"
-        git pull -r
+        echo "$BOOTSTRAP_DIR already exists and points at the expected repo - pulling changes"
+        git -C "$BOOTSTRAP_DIR" pull -r --autostash
     else
-        mkdir -p "$(dirname $BOOTSTRAP_DIR)"
-        cd "$(dirname $BOOTSTRAP_DIR)"
-        git clone git@github.com:jshiell/mac-bootstrap.git "$(basename $BOOTSTRAP_DIR)"
+        mkdir -p "$(dirname "$BOOTSTRAP_DIR")"
+        git clone "$BOOTSTRAP_REPO" "$BOOTSTRAP_DIR"
     fi
 
     cd "$BOOTSTRAP_DIR"
-    ./setup
+    exec make "${@:-all}"
 }
 
-main
+main "$@"
