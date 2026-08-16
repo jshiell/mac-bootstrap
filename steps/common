@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Helpers shared by the provisioning steps. Sourced, never executed.
 
 warn() {
