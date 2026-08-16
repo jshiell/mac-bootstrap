@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# shellcheck source=steps/common
+source "$(dirname "$0")/common"
+
+DOTFILES_REPO="https://github.com/jshiell/dotfiles"
+DOTFILES_BRANCH="main"
+DOTFILES_DIR="$HOME/dotfiles"
+
+# source within the dotfiles repo : destination within $HOME
+DOTFILES=(
+    "curlrc:.curlrc"
+    "vim/vimrc:.vimrc"
+    "zsh/zshrc:.zshrc"
+    "vim:.vim"
+    "gitconfig:.gitconfig"
+    "ghostty:.config/ghostty"
+    "zed:.config/zed"
+    "starship.toml:.config/starship.toml"
+    "helix:.config/helix"
+    "agents/instructions.md:.config/opencode/instructions.md"
+    "agents/instructions.md:.claude/CLAUDE.md"
+)
+
+link_dotfile() {
+    local src="$1"
+    local dest="$2"
+
+    # An existing symlink is ours to replace. Anything else is the user's, and
+    # must be moved aside - linking over a real directory would put the link
+    # inside it rather than replacing it.
+    if [[ -e "$dest" && ! -L "$dest" ]]; then
+        local backup="$dest.bak"
+        if [[ -e "$backup" ]]; then
+            backup="$dest.bak.$(date +%Y%m%d%H%M%S)"
+        fi
+
+        warn "$dest already exists and is not a symlink - moving it to $backup"
+        run mv "$dest" "$backup"
+    fi
+
+    run mkdir -p "$(dirname "$dest")"
+    run ln -sfn "$src" "$dest"
+}
+
+if [[ -d "$DOTFILES_DIR" ]]; then
+    echo "Updating $DOTFILES_DIR"
+    run git -C "$DOTFILES_DIR" pull --rebase --autostash origin "$DOTFILES_BRANCH" \
+        || warn "could not update $DOTFILES_DIR - linking whatever is already there"
+else
+    echo "Cloning $DOTFILES_REPO into $DOTFILES_DIR"
+    run git clone --recursive --branch "$DOTFILES_BRANCH" "$DOTFILES_REPO" "$DOTFILES_DIR"
+fi
+
+run git -C "$DOTFILES_DIR" submodule update --init --recursive \
+    || warn "could not update the submodules of $DOTFILES_DIR"
+
+for entry in "${DOTFILES[@]}"; do
+    IFS=: read -r src dest <<< "$entry"
+    link_dotfile "$DOTFILES_DIR/$src" "$HOME/$dest"
+done
