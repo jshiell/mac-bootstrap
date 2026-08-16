@@ -41,11 +41,13 @@ main() {
     install_homebrew
 
     if [[ -d "$BOOTSTRAP_DIR" ]]; then
+        # Empty rather than fatal if the directory isn't a repo, or has no
+        # origin, so the guard below reports it rather than git's stderr
         local origin
-        origin=$(git -C "$BOOTSTRAP_DIR" remote get-url origin)
+        origin=$(git -C "$BOOTSTRAP_DIR" remote get-url origin 2>/dev/null) || origin=""
 
         if ! is_our_repo "$origin"; then
-            echo "$BOOTSTRAP_DIR exists but its origin is $origin; exiting..." >&2
+            echo "$BOOTSTRAP_DIR exists but is not a checkout of $BOOTSTRAP_REPO (origin: ${origin:-none}); exiting..." >&2
             exit 1
         fi
 
