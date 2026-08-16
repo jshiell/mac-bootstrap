@@ -1,4 +1,2 @@
-get-pip.py
 .DS_Store
-/config.yaml
 /Brewfile.lock.json

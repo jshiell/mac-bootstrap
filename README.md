@@ -61,6 +61,8 @@ DRY_RUN=1 make all  # the individual commands each step would run
 | `defaults` | writes the per-user macOS defaults, then restarts Dock, Finder and SystemUIServer |
 | `system` | firewall, software update, login window and timezone - each via its own `sudo` |
 
+The timezone defaults to `Europe/London`; override it with `TIMEZONE=... make system`.
+
 Git configuration lives in the dotfiles repo now, as `gitconfig` symlinked to `~/.gitconfig`, rather
 than being applied from here.
 
